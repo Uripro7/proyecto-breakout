@@ -5,8 +5,9 @@ class Brick {
 public:
     Brick();
 
-    bool isActive() const;
+    void activate();
     void deactivate();
+    bool isActive() const;
 
 private:
     bool active;
