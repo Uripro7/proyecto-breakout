@@ -1,32 +1,20 @@
-# Variables
 CXX = g++
-CXXFLAGS = -Iinclude -Wall
-LDFLAGS = -lncurses
+CXXFLAGS = -Iinclude -I"C:\SFML-2.5.1\include" -Wall -std=c++11
+LDFLAGS = -L"C:\SFML-2.5.1\lib" -lsfml-graphics -lsfml-window -lsfml-system
+SRC = src/main.cpp src/Game.cpp src/Ball.cpp src/Paddle.cpp src/Brick.cpp
+OBJ = $(SRC:.cpp=.o)
+BIN = breakout
 
-# Directorios
-SRC_DIR = src
-BIN_DIR = bin
-INC_DIR = include
+all: $(BIN)
 
-# Archivos de fuente
-SOURCES = $(wildcard $(SRC_DIR)/*.cpp)
-OBJECTS = $(SOURCES:$(SRC_DIR)/%.cpp=$(BIN_DIR)/%.o)
-TARGET = $(BIN_DIR)/breakout
+$(BIN): $(OBJ)
+	$(CXX) -o $@ $^ $(LDFLAGS)
 
-# Reglas
-all: create_dirs $(TARGET)
-
-$(TARGET): $(OBJECTS)
-	$(CXX) $(OBJECTS) -o $@ $(LDFLAGS)
-
-$(BIN_DIR)/%.o: $(SRC_DIR)/%.cpp
+%.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-create_dirs:
-	mkdir -p $(BIN_DIR)
+clean:
+	rm -f $(OBJ) $(BIN)
 
 run: all
-	./$(TARGET)
-
-clean:
-	rm -f $(BIN_DIR)/*.o $(TARGET)
+	./$(BIN)

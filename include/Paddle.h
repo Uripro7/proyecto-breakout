@@ -1,19 +1,20 @@
 #ifndef PADDLE_H
 #define PADDLE_H
 
+#include <SFML/Graphics.hpp>
+
 class Paddle {
 public:
-    Paddle(int startX, int width, int speed);
-
-    int getX() const;
+    Paddle(float x, float y, const std::string& filename);
     void moveLeft();
     void moveRight();
-    int getLength() const;
+    void draw(sf::RenderWindow& window);
+    sf::FloatRect getBounds() const;
 
 private:
-    int x;
-    int length;
-    int speed;
+    sf::Texture texture;
+    sf::Sprite sprite;
+    float speed;
 };
 
 #endif

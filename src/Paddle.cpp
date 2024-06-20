@@ -1,25 +1,26 @@
 #include "Paddle.h"
 
-Paddle::Paddle(int startX, int width, int speed) : x(startX), length(width), speed(speed) {}
-
-int Paddle::getX() const {
-    return x;
+Paddle::Paddle(float x, float y, const std::string& filename)
+    : speed(5) {
+    if (!texture.loadFromFile(filename)) {
+        // Manejar el error si no se puede cargar la textura
+    }
+    sprite.setTexture(texture);
+    sprite.setPosition(x, y);
 }
 
 void Paddle::moveLeft() {
-    x -= speed;
-    if (x < 0) {
-        x = 0;
-    }
+    sprite.move(-speed, 0);
 }
 
 void Paddle::moveRight() {
-    x += speed;
-    if (x > 60 - length) {
-        x = 60 - length;
-    }
+    sprite.move(speed, 0);
 }
 
-int Paddle::getLength() const {
-    return length;
+void Paddle::draw(sf::RenderWindow& window) {
+    window.draw(sprite);
+}
+
+sf::FloatRect Paddle::getBounds() const {
+    return sprite.getGlobalBounds();
 }
