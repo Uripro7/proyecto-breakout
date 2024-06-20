@@ -16,4 +16,3 @@
 
   ## Here is a video of the videogame
 <video controls src="Ball.cpp - proyecto-breakout [Codespaces_ glowing space spork] - Visual Studio Code y 4 páginas más - Personal_ Microsoft​ Edge 2024-06-20 00-19-45.mp4" title="Title"></video>
-
