@@ -1,0 +1,69 @@
+@startuml
+
+class Game {
+    - WIDTH: int
+    - HEIGHT: int
+    - PADDLE_LENGTH: int
+    - PADDLE_SPEED: int
+    - ball: Ball
+    - paddle: Paddle
+    - bricks: vector<vector<Brick>>
+    - score: int
+    - lives: int
+    - screenManager: ScreenManager
+    + Game()
+    + run(): void
+    + showMenu(): void
+    + initGame(): void
+    + drawGame(): void
+    + updateGame(): void
+    + processInput(): void
+    + loadResources(): void
+}
+
+class Ball {
+    - x: int
+    - y: int
+    - dirX: int
+    - dirY: int
+    + Ball(startX: int, startY: int)
+    + getX(): int
+    + getY(): int
+    + getDirX(): int
+    + getDirY(): int
+    + setDirX(dirX: int): void
+    + setDirY(dirY: int): void
+    + move(): void
+}
+
+class Paddle {
+    - x: int
+    - length: int
+    - speed: int
+    + Paddle(startX: int, width: int, speed: int)
+    + getX(): int
+    + moveLeft(): void
+    + moveRight(): void
+    + getLength(): int
+}
+
+class Brick {
+    - active: bool
+    + Brick()
+    + isActive(): bool
+    + deactivate(): void
+}
+
+class ScreenManager {
+    - screen: char[20][61]
+    + drawScreen(): void
+    + clearScreen(): void
+    + refreshScreen(): void
+}
+
+Game --> Ball
+Game --> Paddle
+Game --> Brick
+Game --> ScreenManager
+
+@enduml
