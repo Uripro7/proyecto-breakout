@@ -1,15 +1,11 @@
 #include "Brick.h"
 
-Brick::Brick() : active(false) {}
-
-void Brick::activate() {
-    active = true;
-}
-
-void Brick::deactivate() {
-    active = false;
-}
+Brick::Brick() : active(true) {}
 
 bool Brick::isActive() const {
     return active;
+}
+
+void Brick::activate(bool state) {
+    active = state;
 }

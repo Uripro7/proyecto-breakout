@@ -3,12 +3,10 @@
 
 class Paddle {
 public:
-    Paddle(int startX, int width, int speed);
-
+    Paddle(int x, int length, int speed);
     int getX() const;
     void moveLeft();
     void moveRight();
-    int getLength() const;
 
 private:
     int x;

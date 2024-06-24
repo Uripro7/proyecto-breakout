@@ -1,45 +1,25 @@
 #include "ScreenManager.h"
-#include <iostream>
-#include <sys/ioctl.h>
-#include <termios.h>
+#include <ncurses.h>
 #include <unistd.h>
-#include <fcntl.h>
-
-ScreenManager::ScreenManager() {}
 
 void ScreenManager::clearScreen() {
-    std::cout << "\033[2J\033[1;1H";
+    clear();
 }
 
 void ScreenManager::drawText(int x, int y, const std::string &text) {
-    std::cout << "\033[" << y + 1 << ";" << x + 1 << "H" << text;
+    mvprintw(y, x, "%s", text.c_str());
 }
 
 void ScreenManager::refreshScreen() {
-    std::cout << std::flush;
+    refresh();
 }
 
 bool ScreenManager::kbhit() {
-    struct termios oldt, newt;
-    int ch;
-    int oldf;
-
-    tcgetattr(STDIN_FILENO, &oldt);
-    newt = oldt;
-    newt.c_lflag &= ~(ICANON | ECHO);
-    tcsetattr(STDIN_FILENO, TCSANOW, &newt);
-    oldf = fcntl(STDIN_FILENO, F_GETFL, 0);
-    fcntl(STDIN_FILENO, F_SETFL, oldf | O_NONBLOCK);
-
-    ch = getchar();
-
-    tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
-    fcntl(STDIN_FILENO, F_SETFL, oldf);
-
-    if(ch != EOF) {
-        ungetc(ch, stdin);
+    timeout(0);
+    int ch = getch();
+    if (ch != ERR) {
+        ungetch(ch);
         return true;
     }
-
     return false;
 }

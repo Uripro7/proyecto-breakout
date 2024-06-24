@@ -1,10 +1,5 @@
-# Ignore build artifacts
-*.o
 *.exe
-
-# Ignore OS-specific files
-.DS_Store
-Thumbs.db
-
-# Ignore CMake build directory
+*.o
+*.obj
+*.log
 build/

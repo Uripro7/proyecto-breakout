@@ -1,32 +1,37 @@
-# Variables
-CXX = g++
-CXXFLAGS = -Iinclude -Wall
+# Configuración de variables
+CC = g++
+CFLAGS = -Iinclude -Wall
 LDFLAGS = -lncurses
+TARGET = breakout
+SRCDIR = src
+OBJDIR = build
 
-# Directorios
-SRC_DIR = src
-BIN_DIR = bin
-INC_DIR = include
+# Lista de archivos fuente y objetos
+SOURCES = $(wildcard $(SRCDIR)/*.cpp)
+OBJECTS = $(SOURCES:$(SRCDIR)/%.cpp=$(OBJDIR)/%.o)
 
-# Archivos de fuente
-SOURCES = $(wildcard $(SRC_DIR)/*.cpp)
-OBJECTS = $(SOURCES:$(SRC_DIR)/%.cpp=$(BIN_DIR)/%.o)
-TARGET = $(BIN_DIR)/breakout
+# Regla para compilar todos los objetos
+all: $(TARGET)
 
-# Reglas
-all: create_dirs $(TARGET)
-
+# Regla para el objetivo final
 $(TARGET): $(OBJECTS)
-	$(CXX) $(OBJECTS) -o $@ $(LDFLAGS)
+	$(CC) $(CFLAGS) $(OBJECTS) $(LDFLAGS) -o $@
 
-$(BIN_DIR)/%.o: $(SRC_DIR)/%.cpp
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+# Regla para compilar cada archivo fuente
+$(OBJDIR)/%.o: $(SRCDIR)/%.cpp | $(OBJDIR)
+	$(CC) $(CFLAGS) -c $< -o $@
 
-create_dirs:
-	mkdir -p $(BIN_DIR)
+# Regla para crear directorio de objetos si no existe
+$(OBJDIR):
+	mkdir -p $(OBJDIR)
 
-run: all
+# Regla para limpiar archivos temporales
+clean:
+	rm -f $(OBJDIR)/*.o $(TARGET)
+
+# Regla para ejecutar el juego
+run:
 	./$(TARGET)
 
-clean:
-	rm -f $(BIN_DIR)/*.o $(TARGET)
+# Phony targets (no son archivos reales)
+.PHONY: all clean run
