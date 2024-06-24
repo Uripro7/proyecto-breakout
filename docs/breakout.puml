@@ -1,69 +1,82 @@
-@startuml
+@startuml breakout
 
 class Game {
-    - WIDTH: int
-    - HEIGHT: int
-    - PADDLE_LENGTH: int
-    - PADDLE_SPEED: int
-    - ball: Ball
-    - paddle: Paddle
-    - bricks: vector<vector<Brick>>
-    - score: int
-    - lives: int
-    - screenManager: ScreenManager
-    + Game()
-    + run(): void
-    + showMenu(): void
-    + initGame(): void
-    + drawGame(): void
-    + updateGame(): void
-    + processInput(): void
-    + loadResources(): void
+    - int score
+    - int lives
+    - Ball ball
+    - Paddle paddle
+    - Brick bricks[][]
+    - Life life
+    - ScreenManager screenManager
+    ------------------
+    + void run()
+    + void drawGame()
+    + void updateGame()
+    + void processInput()
+    + void initGame()
+    + void showMenu()
 }
 
 class Ball {
-    - x: int
-    - y: int
-    - dirX: int
-    - dirY: int
-    + Ball(startX: int, startY: int)
-    + getX(): int
-    + getY(): int
-    + getDirX(): int
-    + getDirY(): int
-    + setDirX(dirX: int): void
-    + setDirY(dirY: int): void
-    + move(): void
+    - int x
+    - int y
+    - int dirX
+    - int dirY
+    ------------------
+    + Ball(int startX, int startY)
+    + void move()
+    + int getX()
+    + int getY()
+    + void setDirX(int direction)
+    + void setDirY(int direction)
+    + int getDirX()
+    + int getDirY()
 }
 
 class Paddle {
-    - x: int
-    - length: int
-    - speed: int
-    + Paddle(startX: int, width: int, speed: int)
-    + getX(): int
-    + moveLeft(): void
-    + moveRight(): void
-    + getLength(): int
+    - int x
+    ------------------
+    + Paddle(int startX)
+    + void moveLeft()
+    + void moveRight()
+    + int getX()
 }
 
 class Brick {
-    - active: bool
-    + Brick()
-    + isActive(): bool
-    + deactivate(): void
+    - bool active
+    ------------------
+    + Brick(bool isActive)
+    + bool isActive()
+    + void activate(bool state)
+}
+
+class Life {
+    - int lives
+    ------------------
+    + Life(int initialLives)
+    + void loseLife()
+    + bool isGameOver()
+    + int getLives()
 }
 
 class ScreenManager {
-    - screen: char[20][61]
-    + drawScreen(): void
-    + clearScreen(): void
-    + refreshScreen(): void
+    ------------------
+    + void drawText(int x, int y, string text)
+    + void clearScreen()
+    + void refreshScreen()
+    + bool kbhit()
 }
 
 Game --> Ball
 Game --> Paddle
 Game --> Brick
+Game --> Life
 Game --> ScreenManager
+Ball --> Paddle
+Ball --> Brick
+Paddle --> Game
+Brick --> Game
+Life --> Game
+ScreenManager --> Game
 
 @enduml
