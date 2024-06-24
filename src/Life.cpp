@@ -1,15 +1,8 @@
-#include "Life.h"
+#include "Life.hpp"
+#include <ncurses.h>
 
-Life::Life(int initialLives) : lives(initialLives) {}
+Life::Life() : lives(3) {}
 
-int Life::getLives() const {
-    return lives;
-}
-
-void Life::loseLife() {
-    lives--;
-}
-
-bool Life::isGameOver() const {
-    return lives <= 0;
+void Life::draw(int lives) {
+    mvprintw(0, 0, "Lives: %d", lives);
 }

@@ -1,143 +1,80 @@
-#include "Game.h"
-#include <iostream>
-#include <sstream>
-#include <unistd.h> // For usleep
+#include "Game.hpp"
+#include <ncurses.h>
+#include <unistd.h>
 
-Game::Game() : ball(WIDTH / 2, HEIGHT - 3), paddle(WIDTH / 2 - PADDLE_LENGTH / 2, PADDLE_LENGTH, PADDLE_SPEED), life(3), score(0) {
-    bricks.resize(WIDTH / 6, std::vector<Brick>(HEIGHT / 4));
-}
-
-void Game::showMenu() {
-    screenManager.clearScreen();
-    screenManager.drawText(0, 0, "==============================");
-    screenManager.drawText(0, 1, "  Do you think you are fast?  ");
-    screenManager.drawText(0, 2, "          Prove it B)         ");
-    screenManager.drawText(0, 3, "      Welcome to breakout     ");
-    screenManager.drawText(0, 4, "==============================");
-    screenManager.drawText(0, 6, "Press any key to start...");
-
-    screenManager.refreshScreen();
-    getchar(); // Wait for the user to press a key to continue
+Game::Game() : score(0), lives(3), ball(WIDTH / 2, HEIGHT - 3, 1, -1), paddle(WIDTH / 2 - PADDLE_LENGTH / 2, HEIGHT - 1, PADDLE_LENGTH) {
+    initGame();
 }
 
 void Game::initGame() {
-    ball = Ball(WIDTH / 2, HEIGHT - 3);
-    paddle = Paddle(WIDTH / 2 - PADDLE_LENGTH / 2, PADDLE_LENGTH, PADDLE_SPEED);
-    life = Life(3);
-    score = 0;
-
-    for (int i = 0; i < WIDTH / 6; ++i) {
-        for (int j = 0; j < HEIGHT / 4; ++j) {
-            bricks[i][j] = Brick();
-        }
-    }
-}
-
-void Game::drawGame() {
-    screenManager.clearScreen();
-
-    for (int j = 0; j < HEIGHT / 4; ++j) {
-        for (int i = 0; i < WIDTH / 6; ++i) {
-            if (bricks[i][j].isActive()) {
-                screenManager.drawText(i * 6, j, "#");
-            }
-        }
-    }
-
-    screenManager.drawText(ball.getX(), ball.getY(), "o");
-
-    for (int i = 0; i < PADDLE_LENGTH; ++i) {
-        screenManager.drawText(paddle.getX() + i, HEIGHT - 1, "=");
-    }
-
-    screenManager.drawText(0, HEIGHT, "Puntuacion: " + std::to_string(score) + "  Vidas: " + std::to_string(life.getLives()));
-
-    screenManager.refreshScreen();
-}
-
-void Game::updateGame() {
-    ball.move();
-
-    // Check collision with walls
-    if (ball.getX() <= 0 || ball.getX() >= WIDTH - 1) {
-        ball.setDirX(-ball.getDirX());
-    }
-    if (ball.getY() <= 0) {
-        ball.setDirY(-ball.getDirY());
-    }
-
-    // Check collision with paddle
-    if (ball.getY() == HEIGHT - 2 && ball.getX() >= paddle.getX() && ball.getX() < paddle.getX() + PADDLE_LENGTH) {
-        ball.setDirY(-ball.getDirY());
-    }
-
-    // Check collision with bricks
-    int brickX = ball.getX() / 6;
-    int brickY = ball.getY() / 1;
-    if (brickX >= 0 && brickX < WIDTH / 6 && brickY >= 0 && brickY < HEIGHT / 4 && bricks[brickX][brickY].isActive()) {
-        bricks[brickX][brickY].activate(false);
-        score += 10;
-        ball.setDirY(-ball.getDirY());
-    }
-
-    // Check if ball falls off the screen
-    if (ball.getY() >= HEIGHT) {
-        life.loseLife();
-        if (life.isGameOver()) {
-            screenManager.clearScreen();
-            screenManager.drawText(0, 0, "Game Over!");
-            screenManager.drawText(0, 1, "Final score: " + std::to_string(score));
-            screenManager.drawText(0, 2, "Press 'r' to restart or 'q' to quit...");
-
-            screenManager.refreshScreen();
-
-            while (true) {
-                if (screenManager.kbhit()) {
-                    char key = getchar();
-                    if (key == 'r') {
-                        initGame();
-                        break;
-                    } else if (key == 'q') {
-                        return;
-                    }
-                }
-            }
-        } else {
-            // Reset ball position
-            ball = Ball(WIDTH / 2, HEIGHT - 3);
-        }
-    }
-}
-
-void Game::processInput() {
-    if (screenManager.kbhit()) {
-        char key = getchar();
-        if (key == 'a') {
-            paddle.moveLeft();
-        } else if (key == 'd') {
-            paddle.moveRight();
+    for (int i = 0; i < 10; ++i) {
+        for (int j = 0; j < 5; ++j) {
+            bricks[i][j] = Brick(i * 8, j * 2);
         }
     }
 }
 
 void Game::run() {
-    showMenu();
-    initGame();
-
-    while (true) {
+    while (lives > 0) {
         drawGame();
         processInput();
         updateGame();
-
-        // Adjust frame delay to control ball speed
-        usleep(FRAME_DELAY);
+        usleep(100000); // Reduce speed of the game loop
     }
 }
 
-int main() {
-    Game game;
-    game.run();
-
-    return 0;
+void Game::drawGame() {
+    screenManager.clearScreen();
+    ball.draw();
+    paddle.draw();
+    for (int i = 0; i < 10; ++i) {
+        for (int j = 0; j < 5; ++j) {
+            bricks[i][j].draw();
+        }
+    }
+    life.draw(lives);
+    screenManager.refreshScreen();
 }
 
+void Game::updateGame() {
+    ball.move();
+    if (ball.getY() == HEIGHT - 1 && ball.getX() >= paddle.getX() && ball.getX() < paddle.getX() + paddle.getLength()) {
+        ball.changeDirectionY();
+    }
+    for (int i = 0; i < 10; ++i) {
+        for (int j = 0; j < 5; ++j) {
+            if (bricks[i][j].isActive() && ball.getX() == bricks[i][j].getX() && ball.getY() == bricks[i][j].getY()) {
+                bricks[i][j].deactivate();
+                ball.changeDirectionY();
+                score += 10;
+            }
+        }
+    }
+    if (ball.getY() >= HEIGHT) {
+        --lives;
+        ball = Ball(WIDTH / 2, HEIGHT - 3, 1, -1);
+        paddle = Paddle(WIDTH / 2 - PADDLE_LENGTH / 2, HEIGHT - 1, PADDLE_LENGTH);
+    }
+}
+
+void Game::processInput() {
+    int ch = getch();
+    if (ch == KEY_LEFT && paddle.getX() > 0) {
+        paddle.moveLeft();
+    } else if (ch == KEY_RIGHT && paddle.getX() < WIDTH - paddle.getLength()) {
+        paddle.moveRight();
+    }
+}
+
+void Game::showMenu() {
+    screenManager.clearScreen();
+    mvprintw(0, 0, "================================");
+    mvprintw(1, 0, "  Do you think you are fast?");
+    mvprintw(2, 0, "          Prove it B)");
+    mvprintw(3, 0, "      Welcome to breakout");
+    mvprintw(4, 0, "================================");
+    mvprintw(6, 0, "Press any key to start...");
+    screenManager.refreshScreen();
+    getch();
+    screenManager.clearScreen();
+}

@@ -1,15 +1,29 @@
-#include "Ball.h"
+#include "Ball.hpp"
+#include <ncurses.h>
 
-Ball::Ball(int x, int y) : x(x), y(y), dirX(1), dirY(-1) {}
+Ball::Ball(int x, int y, int dirX, int dirY) : x(x), y(y), dirX(dirX), dirY(dirY) {}
 
 void Ball::move() {
     x += dirX;
     y += dirY;
 }
 
-int Ball::getX() const { return x; }
-int Ball::getY() const { return y; }
-int Ball::getDirX() const { return dirX; }
-int Ball::getDirY() const { return dirY; }
-void Ball::setDirX(int dirX) { this->dirX = dirX; }
-void Ball::setDirY(int dirY) { this->dirY = dirY; }
+void Ball::draw() {
+    mvaddch(y, x, 'O');
+}
+
+int Ball::getX() const {
+    return x;
+}
+
+int Ball::getY() const {
+    return y;
+}
+
+void Ball::changeDirectionY() {
+    dirY = -dirY;
+}
+
+void Ball::changeDirectionX() {
+    dirX = -dirX;
+}

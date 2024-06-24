@@ -1,82 +1,77 @@
 @startuml breakout
 
-class Game {
-    - int score
-    - int lives
-    - Ball ball
-    - Paddle paddle
-    - Brick bricks[][]
-    - Life life
-    - ScreenManager screenManager
-    ------------------
-    + void run()
-    + void drawGame()
-    + void updateGame()
-    + void processInput()
-    + void initGame()
-    + void showMenu()
-}
-
 class Ball {
-    - int x
-    - int y
-    - int dirX
-    - int dirY
-    ------------------
-    + Ball(int startX, int startY)
-    + void move()
-    + int getX()
-    + int getY()
-    + void setDirX(int direction)
-    + void setDirY(int direction)
-    + int getDirX()
-    + int getDirY()
+    -int x
+    -int y
+    -int dirX
+    -int dirY
+    +Ball(int x, int y, int dirX, int dirY)
+    +void move()
+    +void draw()
+    +int getX() const
+    +int getY() const
+    +void changeDirectionY()
+    +void changeDirectionX()
 }
 
 class Paddle {
-    - int x
-    ------------------
-    + Paddle(int startX)
-    + void moveLeft()
-    + void moveRight()
-    + int getX()
+    -int x
+    -int y
+    -int length
+    +Paddle(int x, int y, int length)
+    +void moveLeft()
+    +void moveRight()
+    +void draw()
+    +int getX() const
+    +int getY() const
+    +int getLength() const
 }
 
 class Brick {
-    - bool active
-    ------------------
-    + Brick(bool isActive)
-    + bool isActive()
-    + void activate(bool state)
+    -int x
+    -int y
+    -bool active
+    +Brick()
+    +Brick(int x, int y)
+    +void draw()
+    +bool isActive() const
+    +void deactivate()
+    +int getX() const
+    +int getY() const
 }
 
 class Life {
-    - int lives
-    ------------------
-    + Life(int initialLives)
-    + void loseLife()
-    + bool isGameOver()
-    + int getLives()
+    -int lives
+    +Life()
+    +void draw(int lives)
 }
 
 class ScreenManager {
-    ------------------
-    + void drawText(int x, int y, string text)
-    + void clearScreen()
-    + void refreshScreen()
-    + bool kbhit()
+    +void clearScreen()
+    +void refreshScreen()
 }
 
-Game --> Ball
-Game --> Paddle
-Game --> Brick
-Game --> Life
-Game --> ScreenManager
-Ball --> Paddle
-Ball --> Brick
-Paddle --> Game
-Brick --> Game
-Life --> Game
-ScreenManager --> Game
+class Game {
+    -int score
+    -int lives
+    -Ball ball
+    -Paddle paddle
+    -Brick bricks[10][5]
+    -Life life
+    -ScreenManager screenManager
+    +Game()
+    +void run()
+    +void drawGame()
+    +void updateGame()
+    +void processInput()
+    +void initGame()
+    +void showMenu()
+}
+
+Ball -> Game
+Paddle -> Game
+Brick -> Game
+Life -> Game
+ScreenManager -> Game
 
 @enduml

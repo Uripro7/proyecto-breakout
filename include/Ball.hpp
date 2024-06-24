@@ -3,18 +3,17 @@
 
 class Ball {
 public:
-    Ball(int x, int y);
+    Ball(int x, int y, int dirX, int dirY);
     void move();
+    void draw();
     int getX() const;
     int getY() const;
-    int getDirX() const;
-    int getDirY() const;
-    void setDirX(int dirX);
-    void setDirY(int dirY);
+    void changeDirectionY();
+    void changeDirectionX();
 
 private:
     int x, y;
     int dirX, dirY;
 };
 
-#endif
+#endif // BALL_H
