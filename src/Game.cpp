@@ -1,112 +1,95 @@
 #include "Game.hpp"
 #include <ncurses.h>
-#include <unistd.h>
+#include <iostream>
+#include <chrono>
+#include <thread>
+#include <Brick.hpp>
 
-Game::Game() : score(0), lives(3), ball(WIDTH / 2, HEIGHT - 3, 1, -1), paddle(WIDTH / 2 - PADDLE_LENGTH / 2, HEIGHT - 1, PADDLE_LENGTH) {
-    initGame();
+Game::Game() : score(0), running(true), paddle(), ball(), bricks(), life(3) {}
+
+void Game::showMenu() {
+    clear();
+    mvprintw(0, 0, "==============================");
+    mvprintw(1, 0, "  Do you think you are fast?  ");
+    mvprintw(2, 0, "          Prove it B)         ");
+    mvprintw(3, 0, "      Welcome to breakout     ");
+    mvprintw(4, 0, "==============================");
+    mvprintw(6, 0, "Press any key to start...");
+    refresh();
+    getch();
+    clear();
 }
 
 void Game::initGame() {
-    for (int i = 0; i < 10; ++i) {
-        for (int j = 0; j < 5; ++j) {
-            bricks[i][j] = Brick(i * Brick::WIDTH, j * Brick::HEIGHT);
-        }
-    }
-}
-
-void Game::run() {
-    showMenu();
-    while (lives > 0) {
-        drawGame();
-        processInput();
-        updateGame();
-        usleep(100000); // Reduce speed of the game loop
-    }
+    ball = Ball();
+    paddle = Paddle();
+    bricks = Brick();
+    life = Life(3);
+    bricks.initialize();
+    score = 0;
 }
 
 void Game::drawGame() {
-    screenManager.clearScreen();
-    ball.draw();
-    paddle.draw();
-    for (int i = 0; i < 10; ++i) {
-        for (int j = 0; j < 5; ++j) {
-            if (bricks[i][j].isActive()) {
-                bricks[i][j].draw();
-            }
-        }
+    clear();
+    char screen[HEIGHT][WIDTH + 1] = {0};
+    bricks.draw(screen);
+    paddle.draw(screen);
+    ball.draw(screen);
+    mvprintw(HEIGHT, 0, "Score: %d  Lives: %d", score, life.getLives());
+    for (int y = 0; y < HEIGHT; ++y) {
+        mvprintw(y, 0, screen[y]);
     }
-    life.draw(lives);
-    mvprintw(HEIGHT + 1, 0, "Score: %d", score);
-    screenManager.refreshScreen();
+    refresh();
 }
 
 void Game::updateGame() {
     ball.move();
-
-    // Check collision with paddle
-    if (ball.getY() == HEIGHT - 1 && ball.getX() >= paddle.getX() && ball.getX() < paddle.getX() + paddle.getLength()) {
-        ball.changeDirectionY();
-        // Adjust ball's direction based on where it hits the paddle
-        int paddleCenter = paddle.getX() + paddle.getLength() / 2;
-        int ballPosition = ball.getX();
-        if (ballPosition < paddleCenter) {
-            ball.changeDirectionX();
-        } else if (ballPosition > paddleCenter) {
-            ball.changeDirectionX();
-        }
+    ball.checkCollisionWithWalls();
+    ball.checkCollisionWithPaddle(paddle.getX());
+    if (ball.checkCollisionWithBrick(bricks.getBricks(), score)) {
+        score += 10;
     }
-
-    // Check collision with bricks
-    for (int i = 0; i < 10; ++i) {
-        for (int j = 0; j < 5; ++j) {
-            if (bricks[i][j].isActive() && ball.getX() >= bricks[i][j].getX() && ball.getX() < bricks[i][j].getX() + Brick::WIDTH &&
-                ball.getY() >= bricks[i][j].getY() && ball.getY() < bricks[i][j].getY() + Brick::HEIGHT) {
-                bricks[i][j].deactivate();
-                ball.changeDirectionY();
-                score += 10;
-            }
-        }
-    }
-
-    // Check if ball hits top wall
-    if (ball.getY() <= 0) {
-        ball.changeDirectionY();
-    }
-
-    // Check if ball hits side walls
-    if (ball.getX() <= 0 || ball.getX() >= WIDTH - 1) {
-        ball.changeDirectionX();
-    }
-
-    // Check if ball misses paddle and loses a life
     if (ball.getY() >= HEIGHT) {
-        --lives;
-        ball = Ball(WIDTH / 2, HEIGHT - 3, 1, -1); // Reset ball position
-        paddle = Paddle(WIDTH / 2 - PADDLE_LENGTH / 2, HEIGHT - 1, PADDLE_LENGTH); // Reset paddle position
+        life.loseLife();
+        if (life.getLives() <= 0) {
+            running = false;
+            mvprintw(HEIGHT / 2, WIDTH / 2 - 5, "Game Over!");
+            refresh();
+            std::this_thread::sleep_for(std::chrono::seconds(3));
+        } else {
+            ball = Ball();
+        }
     }
 }
 
 void Game::processInput() {
     int ch = getch();
     switch (ch) {
-        case KEY_LEFT:
+        case 'a':
             paddle.moveLeft();
             break;
-        case KEY_RIGHT:
+        case 'd':
             paddle.moveRight();
-            break;
-        case 'q':
-            lives = 0; // Quit game
-            break;
-        default:
             break;
     }
 }
 
-void Game::showMenu() {
-    screenManager.clearScreen();
-    mvprintw(HEIGHT / 2 - 2, WIDTH / 2 - 10, "Press any key to start...");
-    screenManager.refreshScreen();
-    getch(); // Wait for user input to start game
-    screenManager.clearScreen();
+void Game::run() {
+    initscr();
+    cbreak();
+    noecho();
+    keypad(stdscr, TRUE);
+    curs_set(0);
+
+    showMenu();
+    initGame();
+
+    while (running) {
+        processInput();
+        updateGame();
+        drawGame();
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+    }
+
+    endwin();
 }

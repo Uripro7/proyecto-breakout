@@ -1,19 +1,19 @@
-#ifndef PADDLE_H
-#define PADDLE_H
+#ifndef PADDLE_HPP
+#define PADDLE_HPP
+
+#include "config.hpp"
 
 class Paddle {
 public:
-    Paddle(int x, int y, int length);
+    Paddle();  // Constructor por defecto
     void moveLeft();
     void moveRight();
-    void draw();
-    int getX() const;
-    int getY() const;
-    int getLength() const;
+    void draw(char screen[HEIGHT][WIDTH + 1]);  // Método draw
+
+    int getX() const;  // Método getX
 
 private:
-    int x, y;
-    int length;
+    int x;
 };
 
-#endif // PADDLE_H
+#endif // PADDLE_HPP

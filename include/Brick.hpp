@@ -1,21 +1,18 @@
-#ifndef BRICK_H
-#define BRICK_H
+#ifndef BRICK_HPP
+#define BRICK_HPP
+
+#include "config.hpp"
 
 class Brick {
 public:
-    Brick();
-    Brick(int x, int y);
-    static const int WIDTH = 6;
-    static const int HEIGHT = 4;
-    void draw();
-    bool isActive() const;
-    void deactivate();
-    int getX() const;
-    int getY() const;
+    Brick();  // Constructor por defecto
+    void initialize();
+    void draw(char screen[HEIGHT][WIDTH + 1]);
+
+    bool (*getBricks())[WIDTH / 6];  // Método getBricks
 
 private:
-    int x, y;
-    bool active;
+    bool bricks[WIDTH / 6][HEIGHT / 4];
 };
 
-#endif // BRICK_H
+#endif // BRICK_HPP

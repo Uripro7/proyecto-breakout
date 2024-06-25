@@ -1,34 +1,32 @@
-#ifndef GAME_H
-#define GAME_H
+#ifndef GAME_HPP
+#define GAME_HPP
 
-#include "Ball.hpp"
+#include "config.hpp"
 #include "Paddle.hpp"
+#include "Ball.hpp"
 #include "Brick.hpp"
 #include "Life.hpp"
 #include "ScreenManager.hpp"
-
-const int WIDTH = 80;
-const int HEIGHT = 24;
-const int PADDLE_LENGTH = 10;
 
 class Game {
 public:
     Game();
     void run();
+
+private:
+    void showMenu();
+    void initGame();
     void drawGame();
     void updateGame();
     void processInput();
-    void initGame();
-    void showMenu();
 
-private:
-    int score;
-    int lives;
-    Ball ball;
     Paddle paddle;
-    Brick bricks[10][5];
+    Ball ball;
+    Brick bricks;
     Life life;
     ScreenManager screenManager;
+    int score;
+    bool running;
 };
 
-#endif // GAME_H
+#endif // GAME_HPP

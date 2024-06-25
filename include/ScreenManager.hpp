@@ -3,8 +3,7 @@
 
 class ScreenManager {
 public:
-    void clearScreen();
-    void refreshScreen();
+    void gotoxy(int x, int y);
 };
 
-#endif // SCREENMANAGER_H
+#endif

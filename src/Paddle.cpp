@@ -1,30 +1,21 @@
 #include "Paddle.hpp"
-#include <ncurses.h>
 
-Paddle::Paddle(int x, int y, int length) : x(x), y(y), length(length) {}
+Paddle::Paddle() : x(WIDTH / 2) {}
 
 void Paddle::moveLeft() {
-    x--;
+    if (x > 0) x -= PADDLE_SPEED;
 }
 
 void Paddle::moveRight() {
-    x++;
+    if (x < WIDTH - PADDLE_LENGTH) x += PADDLE_SPEED;
 }
 
-void Paddle::draw() {
-    for (int i = 0; i < length; ++i) {
-        mvaddch(y, x + i, '=');
+void Paddle::draw(char screen[HEIGHT][WIDTH + 1]) {
+    for (int i = 0; i < PADDLE_LENGTH; ++i) {
+        screen[HEIGHT - 1][x + i] = PADDLE;
     }
 }
 
 int Paddle::getX() const {
     return x;
-}
-
-int Paddle::getY() const {
-    return y;
-}
-
-int Paddle::getLength() const {
-    return length;
 }

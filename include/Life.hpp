@@ -1,13 +1,14 @@
-#ifndef LIFE_H
-#define LIFE_H
+#ifndef LIFE_HPP
+#define LIFE_HPP
 
 class Life {
 public:
-    Life();
-    void draw(int lives);
+    Life(int initialLives = 3);  // Constructor predeterminado
+    void loseLife();
+    int getLives() const;
 
 private:
     int lives;
 };
 
-#endif // LIFE_H
+#endif // LIFE_HPP

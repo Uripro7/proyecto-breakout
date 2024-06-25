@@ -1,19 +1,22 @@
-#ifndef BALL_H
-#define BALL_H
+#ifndef BALL_HPP
+#define BALL_HPP
+
+#include "config.hpp"
 
 class Ball {
 public:
-    Ball(int x, int y, int dirX, int dirY);
+    Ball();  // Constructor por defecto
     void move();
-    void draw();
-    int getX() const;
-    int getY() const;
-    void changeDirectionY();
-    void changeDirectionX();
+    void checkCollisionWithWalls();
+    void checkCollisionWithPaddle(int paddleX);
+    bool checkCollisionWithBrick(bool bricks[WIDTH / 6][HEIGHT / 4], int& score);
+    void draw(char screen[HEIGHT][WIDTH + 1]);
+
+    int getY() const;  // Método getY
 
 private:
     int x, y;
     int dirX, dirY;
 };
 
-#endif // BALL_H
+#endif // BALL_HPP

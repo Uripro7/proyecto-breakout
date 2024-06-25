@@ -1,10 +1,6 @@
 #include "ScreenManager.hpp"
 #include <ncurses.h>
 
-void ScreenManager::clearScreen() {
-    clear();
-}
-
-void ScreenManager::refreshScreen() {
-    refresh();
+void ScreenManager::gotoxy(int x, int y) {
+    move(y, x);
 }

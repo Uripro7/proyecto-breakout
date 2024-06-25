@@ -1,28 +1,31 @@
 #include "Brick.hpp"
-#include <ncurses.h>
 
-Brick::Brick() : x(0), y(0), active(true) {}
+Brick::Brick() {
+    initialize();
+}
 
-Brick::Brick(int x, int y) : x(x), y(y), active(true) {}
-
-void Brick::draw() {
-    if (active) {
-        mvaddch(y, x, '#');
+void Brick::initialize() {
+    for (int i = 0; i < WIDTH / 6; ++i) {
+        for (int j = 0; j < HEIGHT / 4; ++j) {
+            bricks[i][j] = true;
+        }
     }
 }
 
-bool Brick::isActive() const {
-    return active;
+void Brick::draw(char screen[HEIGHT][WIDTH + 1]) {
+    for (int i = 0; i < WIDTH / 6; ++i) {
+        for (int j = 0; j < HEIGHT / 4; ++j) {
+            if (bricks[i][j]) {
+                for (int x = i * 6; x < (i + 1) * 6; ++x) {
+                    for (int y = j * 4; y < (j + 1) * 4; ++y) {
+                        screen[y][x] = BRICK;
+                    }
+                }
+            }
+        }
+    }
 }
 
-void Brick::deactivate() {
-    active = false;
-}
-
-int Brick::getX() const {
-    return x;
-}
-
-int Brick::getY() const {
-    return y;
+bool (*Brick::getBricks())[WIDTH / 6] {
+    return 0;
 }

@@ -19,6 +19,11 @@
 <video controls src="Ball.cpp - proyecto-breakout [Codespaces_ glowing space spork] - Visual Studio Code y 4 páginas más - Personal_ Microsoft​ Edge 2024-06-20 00-19-45.mp4" title="Title"></video>
 
 ##
+### Project structure
+### this is the structure of the game, we got the folders docs, bin, include, src and
+![alt text](image-3.png)
+
+##
 ### UML diagram
 ![alt text](image-2.png)
 
